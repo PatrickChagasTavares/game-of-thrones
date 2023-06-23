@@ -8,9 +8,11 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/internal/services"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/httpRouter"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	migration "github.com/PatrickChagastavares/game-of-thrones/pkg/migrations"
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -21,6 +23,8 @@ func main() {
 		log.Fatal("failed to read config: ", err)
 		return
 	}
+
+	migration.RunMigrations(configs.Database.Writer)
 
 	var (
 		router       = httpRouter.NewGinRouter()

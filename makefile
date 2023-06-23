@@ -19,6 +19,13 @@ run:
 docs:
 	@swag init -g cmd/main.go
 
+.PHONY: up-local
+up-local:
+	@docker compose up -d --build
+
+down-local:
+	@docker compose down
+
 # command to generate migration
 .PHONY: migration-create
 migration-create:
