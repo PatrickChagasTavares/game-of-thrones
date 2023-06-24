@@ -2,8 +2,13 @@ package entities
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/goccy/go-json"
+)
+
+var (
+	ErrDecode = NewHttpErr(http.StatusBadRequest, "problem to decode your input", nil)
 )
 
 type HttpErr struct {

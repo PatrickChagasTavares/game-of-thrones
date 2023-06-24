@@ -1,4 +1,64 @@
+definitions:
+  entities.HouseRequest:
+    properties:
+      current_lord:
+        type: string
+      foundation_year:
+        maxLength: 5
+        minLength: 1
+        type: string
+      name:
+        maxLength: 200
+        minLength: 3
+        type: string
+      region:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - foundation_year
+    - name
+    - region
+    type: object
+  entities.HttpErr:
+    properties:
+      http_code:
+        type: integer
+      message:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /houses:
+    post:
+      consumes:
+      - application/json
+      description: Create one house
+      parameters:
+      - description: create new house
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entities.HouseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entities.HttpErr'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/entities.HttpErr'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - user
 swagger: "2.0"

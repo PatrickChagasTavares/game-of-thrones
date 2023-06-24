@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories/database/houses"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,6 +13,7 @@ type (
 	}
 
 	SqlContainer struct {
+		House houses.IRepository
 	}
 
 	// Options struct of options to create a new repositories
@@ -25,6 +27,8 @@ type (
 // New Create a new instance of repositories
 func New(opts Options) *Container {
 	return &Container{
-		Database: SqlContainer{},
+		Database: SqlContainer{
+			House: houses.NewSqlx(opts.Log, opts.WriterSqlx, opts.ReaderSqlx),
+		},
 	}
 }
