@@ -54,7 +54,7 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 	id, err := ctrl.srv.House.Create(c.Context(), newHouse)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Create: ", "Error on create house: ", newHouse)
-		c.JSONError(err)
+		responseErr(err, c.JSON)
 		return
 	}
 
@@ -80,7 +80,7 @@ func (ctrl *controllers) Find(c httpRouter.Context) {
 	houses, err := ctrl.srv.House.Find(c.Context(), name)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Find: ", "Error on find houses: ", name)
-		c.JSONError(err)
+		responseErr(err, c.JSON)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (ctrl *controllers) FindByID(c httpRouter.Context) {
 	houses, err := ctrl.srv.House.FindByID(c.Context(), id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.FindByID: ", "Error on find house: ", id)
-		c.JSONError(err)
+		responseErr(err, c.JSON)
 		return
 	}
 
@@ -141,7 +141,7 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 	houses, err := ctrl.srv.House.Update(c.Context(), updateHouse)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Update: ", "Error on update house: ", updateHouse)
-		c.JSONError(err)
+		responseErr(err, c.JSON)
 		return
 	}
 
@@ -170,7 +170,7 @@ func (ctrl *controllers) Delete(c httpRouter.Context) {
 	err := ctrl.srv.House.Delete(c.Context(), id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Delete: ", "Error on delete house: ", id)
-		c.JSONError(err)
+		responseErr(err, c.JSON)
 		return
 	}
 

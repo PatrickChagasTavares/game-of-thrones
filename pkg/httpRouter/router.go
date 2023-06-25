@@ -20,7 +20,6 @@ type (
 	Context interface {
 		Context() context.Context
 		JSON(statusCode int, data any)
-		JSONError(err error)
 		Decode(data any) error
 		GetResponseWriter() http.ResponseWriter
 		GetRequestReader() *http.Request

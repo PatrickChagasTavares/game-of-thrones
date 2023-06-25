@@ -92,7 +92,7 @@ func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err er
 	_, err = repo.writer.NamedExecContext(ctx, query, house)
 	if err != nil {
 		repo.log.ErrorContext(ctx, "houses.SqlxRepo.Update", "Error on update house: ", house, err)
-		return errors.New("failed to delete house")
+		return errors.New("failed to update house")
 	}
 
 	return nil

@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/validator"
 	"github.com/gin-gonic/gin"
 )
@@ -81,16 +80,6 @@ func (c *ginContext) Context() context.Context {
 
 func (c *ginContext) JSON(statusCode int, data any) {
 	c.r.JSON(statusCode, data)
-}
-
-func (c *ginContext) JSONError(err error) {
-	switch e := err.(type) {
-	case *entities.HttpErr:
-		c.JSON(e.HTTPCode, err)
-		return
-	default:
-		c.JSON(http.StatusInternalServerError, err)
-	}
 }
 
 func (c *ginContext) Decode(data any) error {

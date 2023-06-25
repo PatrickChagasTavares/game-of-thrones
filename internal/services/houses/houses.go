@@ -2,7 +2,6 @@ package houses
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories"
@@ -30,7 +29,7 @@ func New(repo *repositories.Container, log logger.Logger) IService {
 
 func (srv *services) Create(ctx context.Context, newHouse entities.HouseRequest) (id string, err error) {
 	if _, err := srv.repositories.Database.House.FindByName(ctx, newHouse.Name); err == nil {
-		return id, entities.NewHttpErr(http.StatusConflict, "name informed already used in another house", nil)
+		return id, ErrNameUsed
 	}
 
 	newHouse.PreSave()
@@ -49,17 +48,16 @@ func (srv *services) Find(ctx context.Context, name string) (houses []entities.H
 		house, err := srv.repositories.Database.House.FindByName(ctx, name)
 		if err != nil {
 			srv.log.Error("Srv.Find: ", "House not found by name ", name)
-			return nil, err
+			return nil, ErrFind
 		}
 
 		return []entities.House{house}, nil
-
 	}
 
 	houses, err = srv.repositories.Database.House.Find(ctx)
 	if err != nil {
 		srv.log.Error("Srv.Find: ", "Houses not found ", err)
-		return nil, err
+		return nil, ErrFind
 	}
 
 	return houses, nil
@@ -81,6 +79,10 @@ func (srv *services) Update(ctx context.Context, updateHouse entities.HouseReque
 		return
 	}
 
+	if _, err := srv.repositories.Database.House.FindByName(ctx, updateHouse.Name); err == nil {
+		return house, ErrNameUsed
+	}
+
 	house.PreUpdate(updateHouse)
 
 	err = srv.repositories.Database.House.Update(ctx, &house)
@@ -94,7 +96,7 @@ func (srv *services) Update(ctx context.Context, updateHouse entities.HouseReque
 func (srv *services) Delete(ctx context.Context, id string) (err error) {
 	_, err = srv.repositories.Database.House.FindByID(ctx, id)
 	if err != nil {
-		return entities.NewHttpErr(http.StatusBadRequest, "id informed not found", err)
+		return ErrHouseNotFound
 	}
 
 	err = srv.repositories.Database.House.Delete(ctx, id)
