@@ -8,6 +8,8 @@ setup:
 	@echo "installing golang-migrate..."
 	@go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	@go install -tags postgres github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	@echo "installing mockgen..."
+	@go install github.com/golang/mock/mockgen@latest
 	@echo "downloading project dependencies..."
 	@go mod tidy
 
@@ -18,6 +20,9 @@ run:
 .PHONY: docs
 docs:
 	@swag init --parseDependency -g cmd/main.go
+
+mocks:
+	@go generate ./... 
 
 .PHONY: up-local
 up-local:

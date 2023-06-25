@@ -84,14 +84,15 @@ func (repo *repoSqlx) Update(ctx context.Context, character *entities.Character)
 	return nil
 }
 
+var timeNow = time.Now
+
 func (repo *repoSqlx) Delete(ctx context.Context, id string) (err error) {
 	query := `
 	UPDATE characters
 	SET deleted_at = $1
 	WHERE id = $2;
 	`
-	now := time.Now()
-	_, err = repo.writer.ExecContext(ctx, query, now, id)
+	_, err = repo.writer.ExecContext(ctx, query, timeNow(), id)
 	if err != nil {
 		repo.log.ErrorContext(ctx, "characters.SqlxRepo.Delete", "Error on delete character: ", id, err)
 		return errors.New("failed to delete character")

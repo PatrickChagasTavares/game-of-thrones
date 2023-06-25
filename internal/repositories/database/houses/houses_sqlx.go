@@ -98,14 +98,15 @@ func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err er
 	return nil
 }
 
+var timeNow = time.Now
+
 func (repo *repoSqlx) Delete(ctx context.Context, id string) (err error) {
 	query := `
 	UPDATE houses
 	SET deleted_at = $1
 	WHERE id = $2;
 	`
-	now := time.Now()
-	_, err = repo.writer.ExecContext(ctx, query, now, id)
+	_, err = repo.writer.ExecContext(ctx, query, timeNow(), id)
 	if err != nil {
 		repo.log.ErrorContext(ctx, "houses.SqlxRepo.Delete", "Error on delete house: ", id, err)
 		return errors.New("failed to delete house")

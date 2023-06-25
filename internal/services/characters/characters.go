@@ -1,3 +1,4 @@
+//go:generate mockgen -source=${GOFILE} -package=${GOPACKAGE} -destination=${GOPACKAGE}_mock.go
 package characters
 
 import (
@@ -10,10 +11,10 @@ import (
 
 type (
 	IService interface {
-		Create(ctx context.Context, newlord entities.CharacterRequest) (id string, err error)
-		Find(ctx context.Context) (lords []entities.Character, err error)
-		FindByID(ctx context.Context, id string) (lord entities.Character, err error)
-		Update(ctx context.Context, updateLord entities.CharacterRequest) (lord entities.Character, err error)
+		Create(ctx context.Context, newCharacter entities.CharacterRequest) (id string, err error)
+		Find(ctx context.Context) (characters []entities.Character, err error)
+		FindByID(ctx context.Context, id string) (character entities.Character, err error)
+		Update(ctx context.Context, updateCharacter entities.CharacterRequest) (character entities.Character, err error)
 		Delete(ctx context.Context, id string) (err error)
 	}
 
@@ -43,7 +44,6 @@ func (srv *services) Find(ctx context.Context) (characters []entities.Character,
 	characters, err = srv.repositories.Database.Character.Find(ctx)
 	if err != nil {
 		srv.log.ErrorContext(ctx, "character.Service.database.Find", err)
-		srv.log.Error("Srv.Find: ", "characters not found ", err)
 		return nil, ErrFind
 	}
 
@@ -60,13 +60,13 @@ func (srv *services) FindByID(ctx context.Context, id string) (character entitie
 	return character, nil
 }
 
-func (srv *services) Update(ctx context.Context, updateLord entities.CharacterRequest) (character entities.Character, err error) {
-	character, err = srv.FindByID(ctx, updateLord.ID)
+func (srv *services) Update(ctx context.Context, updateCharacter entities.CharacterRequest) (character entities.Character, err error) {
+	character, err = srv.FindByID(ctx, updateCharacter.ID)
 	if err != nil {
 		return
 	}
 
-	character.PreUpdate(updateLord)
+	character.PreUpdate(updateCharacter)
 
 	err = srv.repositories.Database.Character.Update(ctx, &character)
 	if err != nil {
@@ -83,7 +83,7 @@ func (srv *services) Delete(ctx context.Context, id string) (err error) {
 		return
 	}
 
-	err = srv.repositories.Database.House.Delete(ctx, id)
+	err = srv.repositories.Database.Character.Delete(ctx, id)
 	if err != nil {
 		srv.log.ErrorContext(ctx, "character.Service.database.Delete", err)
 		return err
