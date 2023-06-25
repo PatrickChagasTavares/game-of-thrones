@@ -17,7 +17,7 @@ run:
 
 .PHONY: docs
 docs:
-	@swag init -g cmd/main.go
+	@swag init --parseDependency -g cmd/main.go
 
 .PHONY: up-local
 up-local:

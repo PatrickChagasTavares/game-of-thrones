@@ -48,7 +48,7 @@ func (repo *repoSqlx) Find(ctx context.Context) (houses []entities.House, err er
 		if err == sql.ErrNoRows {
 			return houses, nil
 		}
-		repo.log.ErrorContext(ctx, "houses.SqlxRepo.FindByID", "Error on find house: ", err)
+		repo.log.ErrorContext(ctx, "houses.SqlxRepo.Find", "Error on find house: ", err)
 		return nil, errors.New("problem to find houses")
 	}
 

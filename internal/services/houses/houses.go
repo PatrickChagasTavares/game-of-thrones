@@ -67,7 +67,7 @@ func (srv *services) FindByID(ctx context.Context, id string) (house entities.Ho
 	house, err = srv.repositories.Database.House.FindByID(ctx, id)
 	if err != nil {
 		srv.log.Error("Srv.FindByID: ", "House not found ", id)
-		return house, err
+		return house, ErrHouseNotFound
 	}
 
 	return house, nil
@@ -94,9 +94,9 @@ func (srv *services) Update(ctx context.Context, updateHouse entities.HouseReque
 }
 
 func (srv *services) Delete(ctx context.Context, id string) (err error) {
-	_, err = srv.repositories.Database.House.FindByID(ctx, id)
+	_, err = srv.FindByID(ctx, id)
 	if err != nil {
-		return ErrHouseNotFound
+		return
 	}
 
 	err = srv.repositories.Database.House.Delete(ctx, id)

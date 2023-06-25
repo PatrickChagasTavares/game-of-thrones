@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/PatrickChagastavares/game-of-thrones/internal/controllers/characters"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/controllers/houses"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/services"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
@@ -8,7 +9,8 @@ import (
 
 type (
 	Container struct {
-		House houses.IController
+		House     houses.IController
+		Character characters.IController
 	}
 
 	Options struct {
@@ -19,6 +21,7 @@ type (
 
 func New(opts Options) *Container {
 	return &Container{
-		House: houses.New(opts.Srv, opts.Log),
+		House:     houses.New(opts.Srv, opts.Log),
+		Character: characters.New(opts.Srv, opts.Log),
 	}
 }

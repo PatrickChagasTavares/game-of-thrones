@@ -16,6 +16,230 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/characters": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Find characters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "character"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create one character",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "character"
+                ],
+                "parameters": [
+                    {
+                        "description": "create new character",
+                        "name": "character",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/characters/:id": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "find character by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "character"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Character ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update character",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "character"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Character ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "create new character",
+                        "name": "character",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete character",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "character"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Character ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "create new character",
+                        "name": "character",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/houses": {
             "get": {
                 "security": [
@@ -47,7 +271,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.House"
+                                "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House"
                             }
                         }
                     },
@@ -79,7 +303,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.HouseRequest"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest"
                         }
                     }
                 ],
@@ -90,13 +314,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/entities.HttpErr"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/entities.HttpErr"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
                         }
                     },
                     "500": {
@@ -135,7 +359,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.House"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House"
                         }
                     },
                     "500": {
@@ -173,7 +397,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.HouseRequest"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest"
                         }
                     }
                 ],
@@ -181,13 +405,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.House"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/entities.HttpErr"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
                         }
                     },
                     "500": {
@@ -225,7 +449,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.HouseRequest"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest"
                         }
                     }
                 ],
@@ -233,13 +457,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.House"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/entities.HttpErr"
+                            "$ref": "#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr"
                         }
                     },
                     "500": {
@@ -250,7 +474,47 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entities.House": {
+        "github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tv_series": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tv_series": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "github_com_PatrickChagastavares_game-of-thrones_internal_entities.House": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -260,6 +524,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "foundation_year": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "name": {
@@ -273,7 +540,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.HouseRequest": {
+        "github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest": {
             "type": "object",
             "required": [
                 "foundation_year",
@@ -301,7 +568,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.HttpErr": {
+        "github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr": {
             "type": "object",
             "properties": {
                 "http_code": {

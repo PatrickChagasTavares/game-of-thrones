@@ -1,11 +1,39 @@
 definitions:
-  entities.House:
+  github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      tv_series:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+    type: object
+  github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      tv_series:
+        items:
+          type: string
+        type: array
+    type: object
+  github_com_PatrickChagastavares_game-of-thrones_internal_entities.House:
     properties:
       created_at:
         type: string
       current_lord:
         type: string
       foundation_year:
+        type: string
+      id:
         type: string
       name:
         type: string
@@ -14,7 +42,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  entities.HouseRequest:
+  github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest:
     properties:
       current_lord:
         type: string
@@ -35,7 +63,7 @@ definitions:
     - name
     - region
     type: object
-  entities.HttpErr:
+  github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr:
     properties:
       http_code:
         type: integer
@@ -45,6 +73,146 @@ definitions:
 info:
   contact: {}
 paths:
+  /characters:
+    get:
+      consumes:
+      - application/json
+      description: Find characters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character'
+            type: array
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - character
+    post:
+      consumes:
+      - application/json
+      description: Create one character
+      parameters:
+      - description: create new character
+        in: body
+        name: character
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - character
+  /characters/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Delete character
+      parameters:
+      - description: Character ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: create new character
+        in: body
+        name: character
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - character
+    get:
+      consumes:
+      - application/json
+      description: find character by id
+      parameters:
+      - description: Character ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - character
+    put:
+      consumes:
+      - application/json
+      description: Update character
+      parameters:
+      - description: Character ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: create new character
+        in: body
+        name: character
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.CharacterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.Character'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - character
   /houses:
     get:
       consumes:
@@ -62,7 +230,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/entities.House'
+              $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House'
             type: array
         "500":
           description: Internal Server Error
@@ -80,7 +248,7 @@ paths:
         name: house
         required: true
         schema:
-          $ref: '#/definitions/entities.HouseRequest'
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest'
       produces:
       - application/json
       responses:
@@ -89,11 +257,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/entities.HttpErr'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/entities.HttpErr'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
         "500":
           description: Internal Server Error
       security:
@@ -116,18 +284,18 @@ paths:
         name: house
         required: true
         schema:
-          $ref: '#/definitions/entities.HouseRequest'
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.House'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/entities.HttpErr'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
         "500":
           description: Internal Server Error
       security:
@@ -150,7 +318,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.House'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House'
         "500":
           description: Internal Server Error
       security:
@@ -172,18 +340,18 @@ paths:
         name: house
         required: true
         schema:
-          $ref: '#/definitions/entities.HouseRequest'
+          $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HouseRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.House'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.House'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/entities.HttpErr'
+            $ref: '#/definitions/github_com_PatrickChagastavares_game-of-thrones_internal_entities.HttpErr'
         "500":
           description: Internal Server Error
       security:
