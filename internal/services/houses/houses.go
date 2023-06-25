@@ -12,9 +12,9 @@ import (
 type (
 	IService interface {
 		Create(ctx context.Context, newHouse entities.HouseRequest) (id string, err error)
-		Find(ctx context.Context, limit, offset uint) (houses []entities.House, err error)
+		Find(ctx context.Context, name string) (houses []entities.House, err error)
 		FindByID(ctx context.Context, id string) (house entities.House, err error)
-		FindByName(ctx context.Context, name string) (house entities.House, err error)
+		Update(ctx context.Context, updateHouse entities.HouseRequest) (house entities.House, err error)
 		Delete(ctx context.Context, id string) (err error)
 	}
 
@@ -37,23 +37,28 @@ func (srv *services) Create(ctx context.Context, newHouse entities.HouseRequest)
 
 	err = srv.repositories.Database.House.Create(ctx, newHouse)
 	if err != nil {
+		srv.log.Error("Srv.Find: ", "create house ", err, ", playload: ", newHouse)
 		return id, err
 	}
 
 	return newHouse.ID, nil
 }
 
-func (srv *services) Find(ctx context.Context, limit, offset uint) (houses []entities.House, err error) {
-	if limit == 0 {
-		limit = 10
+func (srv *services) Find(ctx context.Context, name string) (houses []entities.House, err error) {
+	if len(name) > 0 {
+		house, err := srv.repositories.Database.House.FindByName(ctx, name)
+		if err != nil {
+			srv.log.Error("Srv.Find: ", "House not found by name ", name)
+			return nil, err
+		}
+
+		return []entities.House{house}, nil
+
 	}
 
-	if limit > 50 {
-		limit = 50
-	}
-
-	houses, err = srv.repositories.Database.House.Find(ctx, limit, offset)
+	houses, err = srv.repositories.Database.House.Find(ctx)
 	if err != nil {
+		srv.log.Error("Srv.Find: ", "Houses not found ", err)
 		return nil, err
 	}
 
@@ -61,17 +66,24 @@ func (srv *services) Find(ctx context.Context, limit, offset uint) (houses []ent
 }
 
 func (srv *services) FindByID(ctx context.Context, id string) (house entities.House, err error) {
-
 	house, err = srv.repositories.Database.House.FindByID(ctx, id)
 	if err != nil {
+		srv.log.Error("Srv.FindByID: ", "House not found ", id)
 		return house, err
 	}
 
 	return house, nil
 }
 
-func (srv *services) FindByName(ctx context.Context, name string) (house entities.House, err error) {
-	house, err = srv.repositories.Database.House.FindByName(ctx, name)
+func (srv *services) Update(ctx context.Context, updateHouse entities.HouseRequest) (house entities.House, err error) {
+	house, err = srv.FindByID(ctx, updateHouse.ID)
+	if err != nil {
+		return
+	}
+
+	house.PreUpdate(updateHouse)
+
+	err = srv.repositories.Database.House.Update(ctx, &house)
 	if err != nil {
 		return house, err
 	}

@@ -41,6 +41,18 @@ func (r *ginRouter) Post(path string, f HandlerFunc) {
 	})
 }
 
+func (r *ginRouter) Put(path string, f HandlerFunc) {
+	r.router.PUT(path, func(ctx *gin.Context) {
+		f(newGinContext(ctx))
+	})
+}
+
+func (r *ginRouter) Delete(path string, f HandlerFunc) {
+	r.router.DELETE(path, func(ctx *gin.Context) {
+		f(newGinContext(ctx))
+	})
+}
+
 func (r *ginRouter) Server(port string) error {
 	return http.ListenAndServe(port, r.router)
 }
@@ -87,6 +99,10 @@ func (c *ginContext) Decode(data any) error {
 
 func (c *ginContext) GetQuery(query string) string {
 	return c.r.Query(query)
+}
+
+func (c *ginContext) GetParam(param string) string {
+	return c.r.Param(param)
 }
 
 func (c *ginContext) GetResponseWriter() http.ResponseWriter {

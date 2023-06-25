@@ -2,7 +2,6 @@ package houses
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/services"
@@ -13,6 +12,10 @@ import (
 type (
 	IController interface {
 		Create(c httpRouter.Context)
+		Find(c httpRouter.Context)
+		FindByID(c httpRouter.Context)
+		Update(c httpRouter.Context)
+		Delete(c httpRouter.Context)
 	}
 	controllers struct {
 		srv *services.Container
@@ -27,9 +30,9 @@ func New(srv *services.Container, log logger.Logger) IController {
 // house swagger document
 // @Description Create one house
 // @Tags house
-// @Param house body entities.HouseRequest true "create new house"
 // @Accept json
 // @Produce json
+// @Param house body entities.HouseRequest true "create new house"
 // @Success 201
 // @Failure 400 {object} entities.HttpErr
 // @Failure 409 {object} entities.HttpErr
@@ -60,29 +63,116 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 	})
 }
 
-// user swagger document
-// @Description Create one house
+// house swagger document
+// @Description Find houses
 // @Tags house
 // @Accept json
 // @Produce json
-// @Success 200
+// @Param	name	query	string	false	"name house"
+// @Success 200 {object} []entities.House
 // @Failure 500
 // @Security ApiKeyAuth
 // @Router /houses [get]
 func (ctrl *controllers) Find(c httpRouter.Context) {
-	limit, _ := strconv.ParseUint(c.GetQuery("limit"), 10, 64)
-	offset, _ := strconv.ParseUint(c.GetQuery("offset"), 10, 64)
 
-	houses, err := ctrl.srv.House.Find(c.Context(), uint(limit), uint(offset))
+	name := c.GetQuery("name")
+
+	houses, err := ctrl.srv.House.Find(c.Context(), name)
 	if err != nil {
-		ctrl.log.Error("Ctrl.Find: ", "Error on find houses: ", limit, offset)
+		ctrl.log.Error("Ctrl.Find: ", "Error on find houses: ", name)
 		c.JSONError(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"data":   houses,
-		"limit":  limit,
-		"offset": offset,
-	})
+	c.JSON(http.StatusOK, houses)
+}
+
+// house swagger document
+// @Description find house by id
+// @Tags house
+// @Accept json
+// @Produce json
+// @Param id path string true "House ID"
+// @Success 200 {object} entities.House
+// @Failure 500
+// @Security ApiKeyAuth
+// @Router /houses/:id [get]
+func (ctrl *controllers) FindByID(c httpRouter.Context) {
+
+	id := c.GetParam("id")
+
+	houses, err := ctrl.srv.House.FindByID(c.Context(), id)
+	if err != nil {
+		ctrl.log.Error("Ctrl.FindByID: ", "Error on find house: ", id)
+		c.JSONError(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, houses)
+}
+
+// house swagger document
+// @Description Update house
+// @Tags house
+// @Accept json
+// @Produce json
+// @Param id path string true "House ID"
+// @Param house body entities.HouseRequest true "create new house"
+// @Success 200 {object} entities.House
+// @Failure 400 {object} entities.HttpErr
+// @Failure 500
+// @Security ApiKeyAuth
+// @Router /houses/:id [put]
+func (ctrl *controllers) Update(c httpRouter.Context) {
+
+	var updateHouse entities.HouseRequest
+	if err := c.Decode(&updateHouse); err != nil {
+		c.JSON(http.StatusBadRequest, entities.ErrDecode)
+		return
+	}
+
+	if err := c.Validate(updateHouse); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	updateHouse.ID = c.GetParam("id")
+
+	houses, err := ctrl.srv.House.Update(c.Context(), updateHouse)
+	if err != nil {
+		ctrl.log.Error("Ctrl.Update: ", "Error on update house: ", updateHouse)
+		c.JSONError(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, houses)
+}
+
+// house swagger document
+// @Description Delete house
+// @Tags house
+// @Accept json
+// @Produce json
+// @Param id path string true "House ID"
+// @Param house body entities.HouseRequest true "create new house"
+// @Success 200 {object} entities.House
+// @Failure 400 {object} entities.HttpErr
+// @Failure 500
+// @Security ApiKeyAuth
+// @Router /houses/:id [delete]
+func (ctrl *controllers) Delete(c httpRouter.Context) {
+	id := c.GetParam("id")
+	if len(id) < 20 {
+		c.JSON(http.StatusBadRequest, entities.NewHttpErr(http.StatusBadRequest, "id informad is invalid", id))
+		return
+	}
+
+	err := ctrl.srv.House.Delete(c.Context(), id)
+	if err != nil {
+		ctrl.log.Error("Ctrl.Delete: ", "Error on delete house: ", id)
+		c.JSONError(err)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
