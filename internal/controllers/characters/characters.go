@@ -159,10 +159,6 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 // @Router /characters/:id [delete]
 func (ctrl *controllers) Delete(c httpRouter.Context) {
 	id := c.GetParam("id")
-	if len(id) < 20 {
-		c.JSON(http.StatusBadRequest, entities.NewHttpErr(http.StatusBadRequest, "id informad is invalid", id))
-		return
-	}
 
 	err := ctrl.srv.Character.Delete(c.Context(), id)
 	if err != nil {

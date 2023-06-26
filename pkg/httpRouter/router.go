@@ -8,6 +8,7 @@ import (
 type (
 	Router interface {
 		Server(port string) error
+		ServeHTTP(w http.ResponseWriter, req *http.Request)
 		Get(path string, f HandlerFunc)
 		Post(path string, f HandlerFunc)
 		Put(path string, f HandlerFunc)

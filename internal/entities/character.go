@@ -18,11 +18,10 @@ type (
 	}
 
 	CharacterRequest struct {
-		ID        string         `db:"id" json:"id"`
-		Name      string         `db:"name" json:"name"`
-		TVSeries  pq.StringArray `db:"tv_series" json:"tv_series"`
-		CreatedAt time.Time      `db:"created_at" json:"-"`
-		UpdatedAt *time.Time     `db:"updated_at" json:"-"`
+		ID        string         `json:"id"`
+		Name      string         `json:"name" validate:"required,min=3,max=200"`
+		TVSeries  pq.StringArray `json:"tv_series" validate:"required,min=1"`
+		CreatedAt time.Time      `json:"-"`
 	}
 )
 

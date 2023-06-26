@@ -13,6 +13,6 @@ func responseErr(err error, f func(int, any)) {
 		f(http.StatusBadRequest, entities.NewHttpErr(http.StatusBadRequest, err.Error(), nil))
 		return
 	default:
-		f(http.StatusInternalServerError, err)
+		f(http.StatusInternalServerError, err.Error())
 	}
 }

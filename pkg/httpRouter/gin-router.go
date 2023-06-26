@@ -56,6 +56,10 @@ func (r *ginRouter) Server(port string) error {
 	return http.ListenAndServe(port, r.router)
 }
 
+func (r *ginRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	r.router.ServeHTTP(w, req)
+}
+
 func (m *ginRouter) ParseHandler(h http.HandlerFunc) HandlerFunc {
 	return func(c Context) {
 		h(c.GetResponseWriter(), c.GetRequestReader())
