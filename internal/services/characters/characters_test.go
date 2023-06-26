@@ -143,7 +143,7 @@ func Test_FindByID(t *testing.T) {
 		},
 		"Should return error": {
 			input:       data.ID,
-			expectedErr: ErrHouseNotFound,
+			expectedErr: ErrCharacterNotFound,
 			prepareMock: func(mock *characters.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), data.ID).
@@ -204,12 +204,12 @@ func Test_Update(t *testing.T) {
 		},
 		"Should return error find": {
 			input:       req,
-			expectedErr: ErrHouseNotFound,
+			expectedErr: ErrCharacterNotFound,
 			prepareMock: func(mock *characters.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), req.ID).
 					Times(1).
-					Return(entities.Character{}, ErrHouseNotFound)
+					Return(entities.Character{}, ErrCharacterNotFound)
 			},
 		},
 		"Should return error update": {
@@ -273,12 +273,12 @@ func Test_Delete(t *testing.T) {
 		},
 		"Should return error find": {
 			input:       id,
-			expectedErr: ErrHouseNotFound,
+			expectedErr: ErrCharacterNotFound,
 			prepareMock: func(mock *characters.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), id).
 					Times(1).
-					Return(entities.Character{}, ErrHouseNotFound)
+					Return(entities.Character{}, ErrCharacterNotFound)
 			},
 		},
 		"Should return error delete": {

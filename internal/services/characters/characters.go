@@ -54,7 +54,7 @@ func (srv *services) FindByID(ctx context.Context, id string) (character entitie
 	character, err = srv.repositories.Database.Character.FindByID(ctx, id)
 	if err != nil {
 		srv.log.ErrorContext(ctx, "character.Service.database.FindByID", err)
-		return character, ErrHouseNotFound
+		return character, ErrCharacterNotFound
 	}
 
 	return character, nil

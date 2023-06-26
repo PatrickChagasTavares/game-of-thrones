@@ -9,7 +9,7 @@ import (
 
 func responseErr(err error, f func(int, any)) {
 	switch err {
-	case characters.ErrFind, characters.ErrHouseNotFound:
+	case characters.ErrFind, characters.ErrCharacterNotFound:
 		f(http.StatusBadRequest, entities.NewHttpErr(http.StatusBadRequest, err.Error(), nil))
 		return
 	default:
