@@ -20,7 +20,7 @@ func RunMigrations(dbURL string) {
 func getMigration(dbURL string) *migrate.Migrate {
 	dir, _ := os.Getwd()
 	if os.Getenv("env") == "local" {
-		dir = strings.ReplaceAll(dir, "/cmd", "")
+		dir = strings.SplitAfter(dir, "game-of-thrones")[0]
 	}
 	m, err := migrate.New(
 		fmt.Sprintf("file://%s/migrations", dir),
