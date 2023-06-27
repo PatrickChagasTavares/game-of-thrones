@@ -269,6 +269,63 @@ func Test_FindByName(t *testing.T) {
 	}
 }
 
+func Test_RemoveLord(t *testing.T) {
+	input := "lord_Id_123"
+	now := time.Now()
+	timeNow = func() time.Time {
+		return now
+	}
+
+	cases := map[string]struct {
+		input       string
+		expectedErr error
+
+		prepareMock func(mock sqlmock.Sqlmock)
+	}{
+		"Should return success": {
+			input: input,
+			prepareMock: func(mock sqlmock.Sqlmock) {
+				query := regexp.QuoteMeta(`
+				UPDATE houses
+				SET current_lord = "", updated_at = $1
+				WHERE  current_lord= $2;
+				`)
+				mock.ExpectExec(query).
+					WithArgs(now, input).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		"Should return Error": {
+			input:       input,
+			expectedErr: errors.New("failed to remove current_lord by house"),
+			prepareMock: func(mock sqlmock.Sqlmock) {
+				query := regexp.QuoteMeta(`
+				UPDATE houses
+				SET current_lord = "", updated_at = $1
+				WHERE  current_lord= $2;
+				`)
+				mock.ExpectExec(query).
+					WithArgs(now, input).
+					WillReturnError(errors.New("Problem to execute query"))
+			},
+		},
+	}
+
+	for name, cs := range cases {
+		t.Run(name, func(t *testing.T) {
+			db, mock := test.GetDB()
+
+			cs.prepareMock(mock)
+
+			repo := NewSqlx(logger.NewLogrusLogger(), db, db)
+
+			err := repo.RemoveLord(context.Background(), cs.input)
+
+			assert.Equal(t, cs.expectedErr, err)
+		})
+	}
+}
+
 func Test_Update(t *testing.T) {
 	now := time.Now()
 	resp := entities.House{

@@ -36,18 +36,18 @@ func (m *MockIService) EXPECT() *MockIServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockIService) Create(ctx context.Context, newlord entities.CharacterRequest) (string, error) {
+func (m *MockIService) Create(ctx context.Context, newCharacter entities.CharacterRequest) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, newlord)
+	ret := m.ctrl.Call(m, "Create", ctx, newCharacter)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockIServiceMockRecorder) Create(ctx, newlord interface{}) *gomock.Call {
+func (mr *MockIServiceMockRecorder) Create(ctx, newCharacter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIService)(nil).Create), ctx, newlord)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIService)(nil).Create), ctx, newCharacter)
 }
 
 // Delete mocks base method.
@@ -95,16 +95,16 @@ func (mr *MockIServiceMockRecorder) FindByID(ctx, id interface{}) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockIService) Update(ctx context.Context, updateLord entities.CharacterRequest) (entities.Character, error) {
+func (m *MockIService) Update(ctx context.Context, updateCharacter entities.CharacterRequest) (entities.Character, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, updateLord)
+	ret := m.ctrl.Call(m, "Update", ctx, updateCharacter)
 	ret0, _ := ret[0].(entities.Character)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockIServiceMockRecorder) Update(ctx, updateLord interface{}) *gomock.Call {
+func (mr *MockIServiceMockRecorder) Update(ctx, updateCharacter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIService)(nil).Update), ctx, updateLord)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIService)(nil).Update), ctx, updateCharacter)
 }

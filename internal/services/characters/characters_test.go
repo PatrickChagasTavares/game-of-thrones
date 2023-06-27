@@ -8,6 +8,7 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories/database/characters"
+	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories/database/houses"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
@@ -255,11 +256,11 @@ func Test_Delete(t *testing.T) {
 	cases := map[string]struct {
 		input       string
 		expectedErr error
-		prepareMock func(mock *characters.MockIRepository)
+		prepareMock func(mock *characters.MockIRepository, mockHouse *houses.MockIRepository)
 	}{
 		"Should return success": {
 			input: id,
-			prepareMock: func(mock *characters.MockIRepository) {
+			prepareMock: func(mock *characters.MockIRepository, mockHouse *houses.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), id).
 					Times(1).
@@ -269,12 +270,16 @@ func Test_Delete(t *testing.T) {
 					Delete(gomock.Any(), id).
 					Times(1).
 					Return(nil)
+
+				mockHouse.EXPECT().RemoveLord(gomock.Any(), id).
+					Times(1).
+					Return(nil)
 			},
 		},
 		"Should return error find": {
 			input:       id,
 			expectedErr: ErrCharacterNotFound,
-			prepareMock: func(mock *characters.MockIRepository) {
+			prepareMock: func(mock *characters.MockIRepository, mockHouse *houses.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), id).
 					Times(1).
@@ -284,7 +289,7 @@ func Test_Delete(t *testing.T) {
 		"Should return error delete": {
 			input:       id,
 			expectedErr: errors.New("problem to query"),
-			prepareMock: func(mock *characters.MockIRepository) {
+			prepareMock: func(mock *characters.MockIRepository, mockHouse *houses.MockIRepository) {
 				mock.EXPECT().
 					FindByID(gomock.Any(), id).
 					Times(1).
@@ -296,6 +301,25 @@ func Test_Delete(t *testing.T) {
 					Return(errors.New("problem to query"))
 			},
 		},
+		"Should return error removeLord": {
+			input:       id,
+			expectedErr: errors.New("problem to query"),
+			prepareMock: func(mock *characters.MockIRepository, mockHouse *houses.MockIRepository) {
+				mock.EXPECT().
+					FindByID(gomock.Any(), id).
+					Times(1).
+					Return(entities.Character{}, nil)
+
+				mock.EXPECT().
+					Delete(gomock.Any(), id).
+					Times(1).
+					Return(nil)
+
+				mockHouse.EXPECT().RemoveLord(gomock.Any(), id).
+					Times(1).
+					Return(errors.New("problem to query"))
+			},
+		},
 	}
 
 	for name, cs := range cases {
@@ -303,10 +327,17 @@ func Test_Delete(t *testing.T) {
 			ctrl, ctx := gomock.WithContext(context.Background(), t)
 
 			mock := characters.NewMockIRepository(ctrl)
+			mockHouse := houses.NewMockIRepository(ctrl)
 
-			cs.prepareMock(mock)
+			cs.prepareMock(mock, mockHouse)
 
-			srv := New(&repositories.Container{Database: repositories.SqlContainer{Character: mock}}, logger.NewLogrusLogger())
+			srv := New(&repositories.Container{
+				Database: repositories.SqlContainer{
+					Character: mock,
+					House:     mockHouse,
+				}},
+				logger.NewLogrusLogger(),
+			)
 
 			err := srv.Delete(ctx, cs.input)
 

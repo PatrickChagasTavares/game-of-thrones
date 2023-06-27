@@ -89,5 +89,10 @@ func (srv *services) Delete(ctx context.Context, id string) (err error) {
 		return err
 	}
 
+	if err := srv.repositories.Database.House.RemoveLord(ctx, id); err != nil {
+		srv.log.ErrorContext(ctx, "character.Service.database.House.RemoveLord", err)
+		return err
+	}
+
 	return nil
 }

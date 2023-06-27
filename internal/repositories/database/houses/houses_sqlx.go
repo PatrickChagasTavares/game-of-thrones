@@ -11,6 +11,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var timeNow = time.Now
+
 type repoSqlx struct {
 	log    logger.Logger
 	writer *sqlx.DB
@@ -83,6 +85,21 @@ func (repo *repoSqlx) FindByName(ctx context.Context, name string) (houses entit
 	return houses, nil
 }
 
+func (repo *repoSqlx) RemoveLord(ctx context.Context, lordID string) (err error) {
+	query := `
+	UPDATE houses
+	SET current_lord = '', updated_at = $1
+	WHERE  current_lord= $2;
+	`
+	_, err = repo.writer.ExecContext(ctx, query, timeNow(), lordID)
+	if err != nil {
+		repo.log.ErrorContext(ctx, "houses.SqlxRepo.RemoveLord", "Error on remove current_lord by houses: ", lordID, err)
+		return errors.New("failed to remove current_lord by house")
+	}
+
+	return nil
+}
+
 func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err error) {
 	query := `
 	UPDATE houses
@@ -97,8 +114,6 @@ func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err er
 
 	return nil
 }
-
-var timeNow = time.Now
 
 func (repo *repoSqlx) Delete(ctx context.Context, id string) (err error) {
 	query := `

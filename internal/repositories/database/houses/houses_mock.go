@@ -108,6 +108,20 @@ func (mr *MockIRepositoryMockRecorder) FindByName(ctx, name interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByName", reflect.TypeOf((*MockIRepository)(nil).FindByName), ctx, name)
 }
 
+// RemoveLord mocks base method.
+func (m *MockIRepository) RemoveLord(ctx context.Context, lordID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveLord", ctx, lordID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveLord indicates an expected call of RemoveLord.
+func (mr *MockIRepositoryMockRecorder) RemoveLord(ctx, lordID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveLord", reflect.TypeOf((*MockIRepository)(nil).RemoveLord), ctx, lordID)
+}
+
 // Update mocks base method.
 func (m *MockIRepository) Update(ctx context.Context, house *entities.House) error {
 	m.ctrl.T.Helper()
