@@ -1,0 +1,8 @@
+{
+    "env":"development",
+    "port": ":3033",
+    "database":{
+        "writer":"postgres://postgres:postgres@db:5432/game-of-thrones?sslmode=disable",
+        "reader":"postgres://postgres:postgres@db:5432/game-of-thrones?sslmode=disable"
+    }
+}
