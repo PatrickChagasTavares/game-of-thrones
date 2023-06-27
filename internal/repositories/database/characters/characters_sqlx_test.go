@@ -13,7 +13,6 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
 	"github.com/PatrickChagastavares/game-of-thrones/test"
 
-	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +20,7 @@ func Test_Create(t *testing.T) {
 	data := entities.CharacterRequest{
 		ID:        "id_123",
 		Name:      "teste Patrick",
-		TVSeries:  pq.StringArray{"session 1", "session 2"},
+		TVSeries:  []string{"session 1", "session 2"},
 		CreatedAt: time.Now(),
 	}
 
@@ -73,8 +72,8 @@ func Test_Create(t *testing.T) {
 
 func Test_Find(t *testing.T) {
 	resp := []entities.Character{
-		{ID: "id_1", Name: "Patrick", TVSeries: pq.StringArray{"session 1", "session 2"}},
-		{ID: "id_2", Name: "Patrick", TVSeries: pq.StringArray{"session 2", "session 2"}},
+		{ID: "id_1", Name: "Patrick", TVSeries: []string{"session 1", "session 2"}},
+		{ID: "id_2", Name: "Patrick", TVSeries: []string{"session 2", "session 2"}},
 	}
 
 	cases := map[string]struct {
@@ -145,7 +144,7 @@ func Test_Find(t *testing.T) {
 
 func Test_FindByID(t *testing.T) {
 	resp := entities.Character{
-		ID: "id_1", Name: "Patrick", TVSeries: pq.StringArray{"session 1", "session 2"},
+		ID: "id_1", Name: "Patrick", TVSeries: []string{"session 1", "session 2"},
 	}
 
 	cases := map[string]struct {
@@ -206,7 +205,7 @@ func Test_Update(t *testing.T) {
 	resp := entities.Character{
 		ID:        "id_1",
 		Name:      "Patrick",
-		TVSeries:  pq.StringArray{"session 1", "session 2"},
+		TVSeries:  []string{"session 1", "session 2"},
 		CreatedAt: now,
 		UpdatedAt: &now,
 	}
