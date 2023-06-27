@@ -36,6 +36,9 @@ test: ## runing unit tests with covarage
 	GOARCH=amd64 go test ./internal/... -cover -failfast -coverprofile=coverage.out
 	@go tool cover -func coverage.out | awk 'END{print sprintf("coverage: %s", $$3)}'
 
+itest: ## run unit and integration tests with covarage
+	go test ./test/e2e/... -coverprofile=coverage.out -cover --tags=integration 
+
 test-cover: test ## runing unit tests with covarage and opening cover profile on browser
 	go tool cover -html coverage.out
 

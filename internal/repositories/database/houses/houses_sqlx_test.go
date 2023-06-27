@@ -287,7 +287,7 @@ func Test_RemoveLord(t *testing.T) {
 			prepareMock: func(mock sqlmock.Sqlmock) {
 				query := regexp.QuoteMeta(`
 				UPDATE houses
-				SET current_lord = "", updated_at = $1
+				SET current_lord = '', updated_at = $1
 				WHERE  current_lord= $2;
 				`)
 				mock.ExpectExec(query).
@@ -301,7 +301,7 @@ func Test_RemoveLord(t *testing.T) {
 			prepareMock: func(mock sqlmock.Sqlmock) {
 				query := regexp.QuoteMeta(`
 				UPDATE houses
-				SET current_lord = "", updated_at = $1
+				SET current_lord = '', updated_at = $1
 				WHERE  current_lord= $2;
 				`)
 				mock.ExpectExec(query).
