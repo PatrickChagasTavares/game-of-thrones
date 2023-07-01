@@ -1,6 +1,6 @@
-# Backend Church
+# Game of thrones API
 
-Esse projeto é uma API para armazenar as informações sobre as familias do jogo Game off thrones.
+Esse projeto é uma API para armazenar as informações sobre as familias do jogo Game of thrones.
 
 ## 🚀 Começando
 
