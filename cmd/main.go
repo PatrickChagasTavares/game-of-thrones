@@ -9,6 +9,8 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/httpRouter"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
 	migration "github.com/PatrickChagastavares/game-of-thrones/pkg/migrations"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
+	tracerjaeger "github.com/PatrickChagastavares/game-of-thrones/pkg/tracer/tracer_jaeger"
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -25,6 +27,9 @@ func main() {
 	}
 
 	migration.RunMigrations(configs.Database.Writer)
+
+	trace := tracer.New(tracerjaeger.NewExporter(configs.Tracer))
+	defer trace.Close()
 
 	var (
 		router       = httpRouter.NewGinRouter()

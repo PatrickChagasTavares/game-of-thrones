@@ -1,12 +1,16 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	tracerjaeger "github.com/PatrickChagastavares/game-of-thrones/pkg/tracer/tracer_jaeger"
+	"github.com/spf13/viper"
+)
 
 type (
 	Config struct {
-		Env      string   `mapstructure:"env"`
-		Port     string   `mapstructure:"port"`
-		Database Database `mapstructure:"database"`
+		Env      string               `mapstructure:"env"`
+		Port     string               `mapstructure:"port"`
+		Tracer   tracerjaeger.Options `mapstructure:"tracer"`
+		Database Database             `mapstructure:"database"`
 	}
 	Database struct {
 		Writer string `mapstructure:"writer"`

@@ -8,7 +8,9 @@ import (
 
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	"github.com/jmoiron/sqlx"
+	"go.opentelemetry.io/otel/codes"
 )
 
 var timeNow = time.Now
@@ -24,6 +26,9 @@ func NewSqlx(log logger.Logger, writer, reader *sqlx.DB) IRepository {
 }
 
 func (repo *repoSqlx) Create(ctx context.Context, house entities.HouseRequest) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.create")
+	defer span.End()
+
 	_, err = repo.writer.ExecContext(ctx,
 		`INSERT INTO houses 
 		(id,name,region,foundation_year,current_lord,created_at)
@@ -38,6 +43,9 @@ func (repo *repoSqlx) Create(ctx context.Context, house entities.HouseRequest) (
 }
 
 func (repo *repoSqlx) Find(ctx context.Context) (houses []entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.find")
+	defer span.End()
+
 	houses = make([]entities.House, 0)
 	query := `
 	SELECT id, name, region, foundation_year, current_lord, created_at, updated_at
@@ -58,12 +66,16 @@ func (repo *repoSqlx) Find(ctx context.Context) (houses []entities.House, err er
 }
 
 func (repo *repoSqlx) FindByID(ctx context.Context, id string) (houses entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.findbyid")
+	defer span.End()
+
 	query := `
 	SELECT id, name, region, foundation_year, current_lord, created_at, updated_at
 	FROM houses
 	WHERE id =$1 AND deleted_at is null;`
 	err = repo.reader.GetContext(ctx, &houses, query, id)
 	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
 		repo.log.ErrorContext(ctx, "houses.SqlxRepo.FindByID", "Error on find house by id: ", id, err)
 		return houses, errors.New("house is not found or deleted")
 	}
@@ -72,6 +84,9 @@ func (repo *repoSqlx) FindByID(ctx context.Context, id string) (houses entities.
 }
 
 func (repo *repoSqlx) FindByName(ctx context.Context, name string) (houses entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.findbyname")
+	defer span.End()
+
 	query := `
 	SELECT id, name, region, foundation_year, current_lord, created_at, updated_at
 	FROM houses
@@ -86,6 +101,9 @@ func (repo *repoSqlx) FindByName(ctx context.Context, name string) (houses entit
 }
 
 func (repo *repoSqlx) RemoveLord(ctx context.Context, lordID string) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.removelord")
+	defer span.End()
+
 	query := `
 	UPDATE houses
 	SET current_lord = '', updated_at = $1
@@ -101,6 +119,9 @@ func (repo *repoSqlx) RemoveLord(ctx context.Context, lordID string) (err error)
 }
 
 func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.update")
+	defer span.End()
+
 	query := `
 	UPDATE houses
 	SET name = :name, region = :region, foundation_year = :foundation_year, current_lord = :current_lord, updated_at = :updated_at
@@ -116,6 +137,9 @@ func (repo *repoSqlx) Update(ctx context.Context, house *entities.House) (err er
 }
 
 func (repo *repoSqlx) Delete(ctx context.Context, id string) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.houses.delete")
+	defer span.End()
+
 	query := `
 	UPDATE houses
 	SET deleted_at = $1

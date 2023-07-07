@@ -8,6 +8,7 @@ import (
 
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,6 +23,9 @@ func NewSqlx(log logger.Logger, writer, reader *sqlx.DB) IRepository {
 }
 
 func (repo *repoSqlx) Create(ctx context.Context, character entities.CharacterRequest) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.characters.create")
+	defer span.End()
+
 	_, err = repo.writer.ExecContext(ctx,
 		`INSERT INTO characters 
 		(id,name,tv_series,created_at)
@@ -36,6 +40,9 @@ func (repo *repoSqlx) Create(ctx context.Context, character entities.CharacterRe
 }
 
 func (repo *repoSqlx) Find(ctx context.Context) (characters []entities.Character, err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.characters.find")
+	defer span.End()
+
 	characters = make([]entities.Character, 0)
 	query := `
 	SELECT id, name, tv_series, created_at, updated_at
@@ -56,6 +63,9 @@ func (repo *repoSqlx) Find(ctx context.Context) (characters []entities.Character
 }
 
 func (repo *repoSqlx) FindByID(ctx context.Context, id string) (character entities.Character, err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.characters.findbyid")
+	defer span.End()
+
 	query := `
 	SELECT id, name, tv_series, created_at, updated_at
 	FROM characters
@@ -70,6 +80,9 @@ func (repo *repoSqlx) FindByID(ctx context.Context, id string) (character entiti
 }
 
 func (repo *repoSqlx) Update(ctx context.Context, character *entities.Character) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.characters.update")
+	defer span.End()
+
 	query := `
 	UPDATE characters
 	SET name = :name, tv_series = :tv_series, updated_at = :updated_at
@@ -87,6 +100,9 @@ func (repo *repoSqlx) Update(ctx context.Context, character *entities.Character)
 var timeNow = time.Now
 
 func (repo *repoSqlx) Delete(ctx context.Context, id string) (err error) {
+	ctx, span := tracer.Span(ctx, "repositories.database.characters.delete")
+	defer span.End()
+
 	query := `
 	UPDATE characters
 	SET deleted_at = $1

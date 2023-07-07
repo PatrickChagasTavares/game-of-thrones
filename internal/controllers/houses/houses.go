@@ -7,6 +7,7 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/internal/services"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/httpRouter"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 )
 
 type (
@@ -40,6 +41,9 @@ func New(srv *services.Container, log logger.Logger) IController {
 // @Security ApiKeyAuth
 // @Router /houses [post]
 func (ctrl *controllers) Create(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.houses.create")
+	defer span.End()
+
 	var newHouse entities.HouseRequest
 	if err := c.Decode(&newHouse); err != nil {
 		c.JSON(http.StatusBadRequest, entities.ErrDecode)
@@ -51,10 +55,10 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 		return
 	}
 
-	id, err := ctrl.srv.House.Create(c.Context(), newHouse)
+	id, err := ctrl.srv.House.Create(ctx, newHouse)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Create: ", "Error on create house: ", newHouse)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -74,13 +78,15 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /houses [get]
 func (ctrl *controllers) Find(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.houses.find")
+	defer span.End()
 
 	name := c.GetQuery("name")
 
-	houses, err := ctrl.srv.House.Find(c.Context(), name)
+	houses, err := ctrl.srv.House.Find(ctx, name)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Find: ", "Error on find houses: ", name)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -98,13 +104,15 @@ func (ctrl *controllers) Find(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /houses/:id [get]
 func (ctrl *controllers) FindByID(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.houses.findbyid")
+	defer span.End()
 
 	id := c.GetParam("id")
 
-	houses, err := ctrl.srv.House.FindByID(c.Context(), id)
+	houses, err := ctrl.srv.House.FindByID(ctx, id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.FindByID: ", "Error on find house: ", id)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -124,6 +132,8 @@ func (ctrl *controllers) FindByID(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /houses/:id [put]
 func (ctrl *controllers) Update(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.houses.update")
+	defer span.End()
 
 	var updateHouse entities.HouseRequest
 	if err := c.Decode(&updateHouse); err != nil {
@@ -138,10 +148,10 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 
 	updateHouse.ID = c.GetParam("id")
 
-	houses, err := ctrl.srv.House.Update(c.Context(), updateHouse)
+	houses, err := ctrl.srv.House.Update(ctx, updateHouse)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Update: ", "Error on update house: ", updateHouse)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -161,12 +171,15 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /houses/:id [delete]
 func (ctrl *controllers) Delete(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.houses.delete")
+	defer span.End()
+
 	id := c.GetParam("id")
 
-	err := ctrl.srv.House.Delete(c.Context(), id)
+	err := ctrl.srv.House.Delete(ctx, id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Delete: ", "Error on delete house: ", id)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 

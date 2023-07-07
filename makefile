@@ -15,7 +15,7 @@ setup:
 	@go mod tidy
 
 up-local:
-	@docker compose up db adminer -d --build
+	@docker compose up db adminer jaeger -d --build
 
 down-local:
 	@docker compose down

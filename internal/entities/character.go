@@ -1,9 +1,11 @@
 package entities
 
 import (
+	"context"
 	"strings"
 	"time"
 
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -25,12 +27,18 @@ type (
 	}
 )
 
-func (lr *CharacterRequest) PreSave() {
+func (lr *CharacterRequest) PreSave(ctx context.Context) {
+	_, span := tracer.Span(ctx, "entities.character.presave")
+	defer span.End()
+
 	lr.ID = uuid.NewString()
 	lr.CreatedAt = time.Now()
 }
 
-func (l *Character) PreUpdate(character CharacterRequest) {
+func (l *Character) PreUpdate(ctx context.Context, character CharacterRequest) {
+	_, span := tracer.Span(ctx, "entities.character.preupdate")
+	defer span.End()
+
 	if character.Name != l.Name {
 		l.Name = character.Name
 	}
