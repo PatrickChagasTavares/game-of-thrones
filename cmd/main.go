@@ -11,7 +11,9 @@ import (
 	migration "github.com/PatrickChagastavares/game-of-thrones/pkg/migrations"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	tracerjaeger "github.com/PatrickChagastavares/game-of-thrones/pkg/tracer/tracer_jaeger"
-	"github.com/jmoiron/sqlx"
+	"github.com/uptrace/opentelemetry-go-extra/otelsql"
+	"github.com/uptrace/opentelemetry-go-extra/otelsqlx"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -34,9 +36,21 @@ func main() {
 	var (
 		router       = httpRouter.NewGinRouter()
 		repositories = repositories.New(repositories.Options{
-			WriterSqlx: sqlx.MustConnect("postgres", configs.Database.Writer),
-			ReaderSqlx: sqlx.MustConnect("postgres", configs.Database.Reader),
-			Log:        log,
+			WriterSqlx: otelsqlx.MustConnect(
+				"postgres",
+				configs.Database.Writer,
+				otelsql.WithAttributes(
+					semconv.DBSystemPostgreSQL,
+					semconv.DBName("game-of-thrones"),
+				)),
+			ReaderSqlx: otelsqlx.MustConnect(
+				"postgres",
+				configs.Database.Reader,
+				otelsql.WithAttributes(
+					semconv.DBSystemPostgreSQL,
+					semconv.DBName("game-of-thrones"),
+				)),
+			Log: log,
 		})
 		services = services.New(services.Options{
 			Repo: repositories,

@@ -339,6 +339,10 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.11 h1:BMaWp1Bb6fHwEtbplGBGJ498wD+LKlNSl25MjdZY4dU=
 github.com/ugorji/go/codec v1.2.11/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
+github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.2 h1:USRngIQppxeyb39XzkVHXwQesKK0+JSwnHE/1c7fgic=
+github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.2/go.mod h1:1frv9RN1rlTq0jzCq+mVuEQisubZCQ4OU6S/8CaHzGY=
+github.com/uptrace/opentelemetry-go-extra/otelsqlx v0.2.2 h1:on1WgxU/BeTEECJ0YIf3mWP6QoOeTCc33ce7Yx275CQ=
+github.com/uptrace/opentelemetry-go-extra/otelsqlx v0.2.2/go.mod h1:0jd6Yb+UTnNMIkmR3np6MH5aA1rsiex7zrumHOaDkoE=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
 github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17pCcGlemwknint6hfoeCVQrEMVwxRLRjXpq+BU=
