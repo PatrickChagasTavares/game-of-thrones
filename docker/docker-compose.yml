@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  application:
+    image: game-of-thrones
+    restart: always
+    ports:
+      - "3033:3033"
+    networks:
+      - dbnetwork
+      - observabilitynetwork
+
+networks:
+  dbnetwork:
+    external: true
+    name: db_dbnetwork
+  observabilitynetwork:
+    external: true
+    name: observability_observabilitynetwork

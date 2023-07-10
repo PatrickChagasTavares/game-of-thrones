@@ -2,6 +2,7 @@
 
 DATABASE_CONNECT="postgres://postgres:postgres@127.0.0.1:5432/game-of-thrones?sslmode=disable"
 MIGRATION_SOURCE="file://migrations"
+NAME_IMAGE = "game-of-thrones"
 
 setup:
 	@echo "installing swaggo..."
@@ -14,20 +15,28 @@ setup:
 	@echo "downloading project dependencies..."
 	@go mod tidy
 
-up-local:
-	@docker compose up db adminer jaeger -d --build
-
-down-local:
-	@docker compose down
-
-run:
-	@cd cmd && env=local go run main.go
+build: 
+	@echo $(NAME_IMAGE): Compilando o micro-serviço
+	@env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOFLAGS=-buildvcs=false go build -o dist/$(NAME_IMAGE)/main cmd/main.go 
+	@echo $(NAME_IMAGE): Construindo a imagem
+	@docker build -t $(NAME_IMAGE) .
 
 docker-up:
-	@docker compose up -d --build
+	@docker compose -f "docker/docker-compose.yml" up -d --build
 
-docker-down: down-local
-	@docker compose down
+docker-down:
+	@docker compose -f "docker/docker-compose.yml" down
+
+up-local:
+	@docker compose -f "docker/db/docker-compose.yml" up -d --build
+	@docker compose -f "docker/observability/docker-compose.yml" up -d --build
+
+down-local:
+	@docker compose -f "docker/db/docker-compose.yml" down
+	@docker compose -f "docker/observability/docker-compose.yml" down
+
+run: up-local
+	@cd cmd && env=local go run main.go
 
 docs:
 	@swag init --parseDependency -g cmd/main.go
