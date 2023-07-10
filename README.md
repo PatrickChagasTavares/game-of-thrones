@@ -1,5 +1,5 @@
 # Game of Thrones API
-[![Test and coverage](https://github.com/PatrickChagastavares/game-of-thrones/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/PatrickChagastavares/game-of-thrones/actions/workflows/go.yml)
+[![Test and coverage](https://github.com/PatrickChagastavares/game-of-thrones/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/PatrickChagastavares/game-of-thrones/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/PatrickChagastavares/game-of-thrones/branch/main/graph/badge.svg?token=QB8MFFU8XL)](https://codecov.io/gh/PatrickChagastavares/game-of-thrones)
 
 Esse projeto é uma API para armazenar as informações sobre as familias do jogo Game of thrones.
