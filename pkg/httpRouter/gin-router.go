@@ -2,10 +2,17 @@ package httpRouter
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/validator"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 )
 
 type (
@@ -14,17 +21,78 @@ type (
 	}
 )
 
+const (
+	ginTracerKey = "gin-tracer"
+)
+
 func NewGinRouter() Router {
 	router := gin.Default()
 
-	// Set the content type default = application/json
-	router.Use(func(ctx *gin.Context) {
-		ctx.Writer.Header().Set("Content-Type", "application/json")
-		ctx.Next()
-	})
+	router.Use(
+		// Set the content type default = application/json
+		setContentType("application/json"),
+		// Set middleware to tracer
+		tracing(),
+	)
 
 	return &ginRouter{
 		router: router,
+	}
+}
+
+func setContentType(contentType string) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		ctx.Writer.Header().Set("Content-Type", contentType)
+		ctx.Next()
+	}
+}
+
+func tracing() func(ctx *gin.Context) {
+	textMapPropagator := otel.GetTextMapPropagator()
+
+	return func(ctx *gin.Context) {
+		ctx.Set(ginTracerKey, tracer.Span)
+
+		savedCtx := ctx.Request.Context()
+		defer func() {
+			ctx.Request = ctx.Request.WithContext(savedCtx)
+		}()
+
+		// create ctx with propagators.
+		ctxTracer := textMapPropagator.Extract(savedCtx, propagation.HeaderCarrier(ctx.Request.Header))
+
+		path := ctx.FullPath()
+		method := ctx.Request.Method
+		if path == "" {
+			path = fmt.Sprintf("HTTP %s route not found", method)
+		}
+		spanName := fmt.Sprintf("%s %s", method, path)
+
+		// Create a span
+		ctxTracer, span := tracer.Span(ctxTracer, spanName,
+			tracer.SpanStartOption{Key: string(semconv.HTTPSchemeKey), Value: ctx.Request.URL.Scheme},
+			tracer.SpanStartOption{Key: string(semconv.HTTPMethodKey), Value: method},
+			tracer.SpanStartOption{Key: string(semconv.HTTPURLKey), Value: ctx.Request.URL.String()},
+		)
+		defer span.End()
+
+		// pass the span through the request context
+		ctx.Request = ctx.Request.WithContext(ctxTracer)
+
+		// serve the request to the next middleware
+		ctx.Next()
+
+		status := ctx.Writer.Status()
+		span.SetAttributes(semconv.HTTPStatusCode(status))
+
+		if status >= 400 {
+			span.SetStatus(codes.Error, "")
+		}
+
+		if len(ctx.Errors) > 0 {
+			span.SetAttributes(attribute.String("gin.errors", ctx.Errors.String()))
+		}
+
 	}
 }
 

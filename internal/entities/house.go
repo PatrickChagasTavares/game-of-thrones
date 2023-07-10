@@ -1,8 +1,10 @@
 package entities
 
 import (
+	"context"
 	"time"
 
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 	"github.com/google/uuid"
 )
 
@@ -28,12 +30,18 @@ type (
 	}
 )
 
-func (hr *HouseRequest) PreSave() {
+func (hr *HouseRequest) PreSave(ctx context.Context) {
+	_, span := tracer.Span(ctx, "entities.house.presave")
+	defer span.End()
+
 	hr.ID = uuid.NewString()
 	hr.CreatedAt = time.Now()
 }
 
-func (h *House) PreUpdate(house HouseRequest) {
+func (h *House) PreUpdate(ctx context.Context, house HouseRequest) {
+	_, span := tracer.Span(ctx, "entities.house.preupdate")
+	defer span.End()
+
 	if house.Name != h.Name {
 		h.Name = house.Name
 	}

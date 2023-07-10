@@ -7,6 +7,7 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/internal/entities"
 	"github.com/PatrickChagastavares/game-of-thrones/internal/repositories"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 )
 
 type (
@@ -29,11 +30,14 @@ func New(repo *repositories.Container, log logger.Logger) IService {
 }
 
 func (srv *services) Create(ctx context.Context, newHouse entities.HouseRequest) (id string, err error) {
+	ctx, span := tracer.Span(ctx, "services.houses.create")
+	defer span.End()
+
 	if _, err := srv.repositories.Database.House.FindByName(ctx, newHouse.Name); err == nil {
 		return id, ErrNameUsed
 	}
 
-	newHouse.PreSave()
+	newHouse.PreSave(ctx)
 
 	err = srv.repositories.Database.House.Create(ctx, newHouse)
 	if err != nil {
@@ -45,6 +49,9 @@ func (srv *services) Create(ctx context.Context, newHouse entities.HouseRequest)
 }
 
 func (srv *services) Find(ctx context.Context, name string) (houses []entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "services.houses.find")
+	defer span.End()
+
 	if len(name) > 0 {
 		house, err := srv.repositories.Database.House.FindByName(ctx, name)
 		if err != nil {
@@ -65,6 +72,9 @@ func (srv *services) Find(ctx context.Context, name string) (houses []entities.H
 }
 
 func (srv *services) FindByID(ctx context.Context, id string) (house entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "services.houses.findbyid")
+	defer span.End()
+
 	house, err = srv.repositories.Database.House.FindByID(ctx, id)
 	if err != nil {
 		srv.log.Error("Srv.FindByID: ", "House not found ", id)
@@ -75,6 +85,9 @@ func (srv *services) FindByID(ctx context.Context, id string) (house entities.Ho
 }
 
 func (srv *services) Update(ctx context.Context, updateHouse entities.HouseRequest) (house entities.House, err error) {
+	ctx, span := tracer.Span(ctx, "services.houses.update")
+	defer span.End()
+
 	house, err = srv.FindByID(ctx, updateHouse.ID)
 	if err != nil {
 		return
@@ -84,7 +97,7 @@ func (srv *services) Update(ctx context.Context, updateHouse entities.HouseReque
 		return house, ErrNameUsed
 	}
 
-	house.PreUpdate(updateHouse)
+	house.PreUpdate(ctx, updateHouse)
 
 	err = srv.repositories.Database.House.Update(ctx, &house)
 	if err != nil {
@@ -95,6 +108,9 @@ func (srv *services) Update(ctx context.Context, updateHouse entities.HouseReque
 }
 
 func (srv *services) Delete(ctx context.Context, id string) (err error) {
+	ctx, span := tracer.Span(ctx, "services.houses.delete")
+	defer span.End()
+
 	_, err = srv.FindByID(ctx, id)
 	if err != nil {
 		return

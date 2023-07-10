@@ -7,6 +7,7 @@ import (
 	"github.com/PatrickChagastavares/game-of-thrones/internal/services"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/httpRouter"
 	"github.com/PatrickChagastavares/game-of-thrones/pkg/logger"
+	"github.com/PatrickChagastavares/game-of-thrones/pkg/tracer"
 )
 
 type (
@@ -40,6 +41,9 @@ func New(srv *services.Container, log logger.Logger) IController {
 // @Security ApiKeyAuth
 // @Router /characters [post]
 func (ctrl *controllers) Create(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.characters.create")
+	defer span.End()
+
 	var newCharacter entities.CharacterRequest
 	if err := c.Decode(&newCharacter); err != nil {
 		c.JSON(http.StatusBadRequest, entities.ErrDecode)
@@ -51,10 +55,10 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 		return
 	}
 
-	id, err := ctrl.srv.Character.Create(c.Context(), newCharacter)
+	id, err := ctrl.srv.Character.Create(ctx, newCharacter)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Create: ", "Error on create character: ", newCharacter)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -73,11 +77,13 @@ func (ctrl *controllers) Create(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /characters [get]
 func (ctrl *controllers) Find(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.characters.find")
+	defer span.End()
 
-	characters, err := ctrl.srv.Character.Find(c.Context())
+	characters, err := ctrl.srv.Character.Find(ctx)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Find: ", "Error on find characters: ", err)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -95,13 +101,15 @@ func (ctrl *controllers) Find(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /characters/:id [get]
 func (ctrl *controllers) FindByID(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.characters.findbyid")
+	defer span.End()
 
 	id := c.GetParam("id")
 
-	characters, err := ctrl.srv.Character.FindByID(c.Context(), id)
+	characters, err := ctrl.srv.Character.FindByID(ctx, id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.FindByID: ", "Error on find character: ", id)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -121,6 +129,8 @@ func (ctrl *controllers) FindByID(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /characters/:id [put]
 func (ctrl *controllers) Update(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.characters.update")
+	defer span.End()
 
 	var updateCharacter entities.CharacterRequest
 	if err := c.Decode(&updateCharacter); err != nil {
@@ -135,10 +145,10 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 
 	updateCharacter.ID = c.GetParam("id")
 
-	characters, err := ctrl.srv.Character.Update(c.Context(), updateCharacter)
+	characters, err := ctrl.srv.Character.Update(ctx, updateCharacter)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Update: ", "Error on update character: ", updateCharacter)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 
@@ -158,12 +168,15 @@ func (ctrl *controllers) Update(c httpRouter.Context) {
 // @Security ApiKeyAuth
 // @Router /characters/:id [delete]
 func (ctrl *controllers) Delete(c httpRouter.Context) {
+	ctx, span := tracer.Span(c.Context(), "controllers.characters.delete")
+	defer span.End()
+
 	id := c.GetParam("id")
 
-	err := ctrl.srv.Character.Delete(c.Context(), id)
+	err := ctrl.srv.Character.Delete(ctx, id)
 	if err != nil {
 		ctrl.log.Error("Ctrl.Delete: ", "Error on delete character: ", id)
-		responseErr(err, c.JSON)
+		responseErr(ctx, err, c.JSON)
 		return
 	}
 

@@ -1,6 +1,12 @@
 {
     "env":"development",
     "port": ":3033",
+    "tracer": {
+        "endpoint_url":"http://localhost:14268/api/traces",
+        "service_name":"game-of-thrones",
+        "username":"",
+		"password":""
+    },
     "database":{
         "writer":"postgres://postgres:postgres@127.0.0.1:5432/game-of-thrones?sslmode=disable",
         "reader":"postgres://postgres:postgres@127.0.0.1:5432/game-of-thrones?sslmode=disable"
